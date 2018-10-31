@@ -72,6 +72,7 @@ function graphLegendDirective(popoverSrv, $timeout) {
         const scrollPosition = legendScrollbar.scroller.scrollTop;
         ctrl.toggleSeries(seriesInfo, e);
         legendScrollbar.scroller.scrollTop = scrollPosition;
+        e.preventDefault();
       }
 
       function sortLegend(e) {
@@ -175,9 +176,11 @@ function graphLegendDirective(popoverSrv, $timeout) {
       }
 
       function renderSeriesLegendElements() {
+        const urlPatternRe = /\$(\d+)/g;
         const seriesElements = [];
         for (i = 0; i < seriesList.length; i++) {
           const series = seriesList[i];
+          let href = '';
 
           if (series.hideFromLegend(panel.legend)) {
             continue;
@@ -196,8 +199,24 @@ function graphLegendDirective(popoverSrv, $timeout) {
           html += '<i class="fa fa-minus pointer" style="color:' + series.color + '"></i>';
           html += '</div>';
 
+          if (ctrl.panel.urlPattern) {
+            const alias = series.alias.split('.');
+            href = ctrl.panel.urlPattern;
+            for (const match of ctrl.panel.urlPattern.match(urlPatternRe)) {
+              const i = parseInt(match.replace('$', ''), 10) - 1;
+              const re = new RegExp('\\' + match);
+              href = href.replace(re, alias[i] || '');
+            }
+            href = 'href="' + href + '"';
+          }
           html +=
-            '<a class="graph-legend-alias pointer" title="' + series.aliasEscaped + '">' + series.aliasEscaped + '</a>';
+            '<a class="graph-legend-alias pointer" ' +
+            href +
+            ' title="' +
+            series.aliasEscaped +
+            '">' +
+            series.aliasEscaped +
+            '</a>';
 
           if (panel.legend.values) {
             const avg = series.formatValue(series.stats.avg);

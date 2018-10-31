@@ -70,4 +70,12 @@
 			checked="ctrl.panel.legend.hideZero" on-change="ctrl.render()">
 		</gf-form-switch>
 	</div>
+	<div class="editor-row">
+		<div class="section gf-form-group">
+			<div class="gf-form">
+				<label class="gf-form-label">URL pattern</label>
+				<input type="text" ng-model="ctrl.panel.urlPattern" bs-typeahead="getSeriesNames" ng-blur="ctrl.render()" data-min-length=0 data-items=100 class="gf-form-input">
+			</div>
+		</div>
+	</div>
 </div>
